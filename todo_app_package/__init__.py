@@ -1,27 +1,29 @@
 from flask import Flask
-from .extensions import db, login_manager
-from .models import User, Task
+from .extensions import db, login_manager, migrate
+from .models import User
 from .auth import auth_bp
 from .tasks import tasks_bp
 from flask_migrate import Migrate
+from .settings import Config, TestConfig
 
-def create_app():
+def create_app(config_class=Config):
     app = Flask(__name__)
-    app.config.from_object('todo_app_package.settings')
+    
+    app.config.from_object(config_class)
     
     db.init_app(app)
 
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
-   
+
+    migrate.init_app(app, db)
+
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
     
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(tasks_bp, url_prefix='/')
-
-    migrate = Migrate(app, db)
     
     return app
 
