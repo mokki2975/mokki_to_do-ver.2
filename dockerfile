@@ -9,6 +9,7 @@ COPY requirements.txt .
 
 # 必要なPythonパッケージをインストール
 RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt pytest 
 
 # ホストのアプリケーションコードをコンテナの/appにコピー
 COPY . .
