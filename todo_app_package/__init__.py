@@ -1,20 +1,23 @@
-from flask import Flask
+from flask import Flask, redirect, url_for
+import os
 from .extensions import db, login_manager, migrate
 from .models import User
 from .auth import auth_bp
 from .tasks import tasks_bp
-from flask_migrate import Migrate
-from .settings import Config, TestConfig
+from .settings import Config
 
 def create_app(config_class=Config):
-    app = Flask(__name__)
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    static_folder_path = os.path.join(base_dir, 'static')
+    app = Flask(__name__, static_folder=static_folder_path)
     
     app.config.from_object(config_class)
-    
+     
     db.init_app(app)
 
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
+    login_manager.login_message = 'ログインが必要です。'
 
     migrate.init_app(app, db)
 
@@ -24,6 +27,10 @@ def create_app(config_class=Config):
     
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(tasks_bp, url_prefix='/')
+
+    @app.route('/')
+    def index():
+        return redirect(url_for('tasks.index'))
     
     return app
 
