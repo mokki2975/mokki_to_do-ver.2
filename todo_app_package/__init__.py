@@ -5,6 +5,7 @@ from .models import User
 from .auth import auth_bp
 from .tasks import tasks_bp
 from .settings import Config
+from werkzeug.security import generate_password_hash
 
 def create_app(config_class=Config):
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -31,6 +32,19 @@ def create_app(config_class=Config):
     @app.route('/')
     def index():
         return redirect(url_for('tasks.index'))
+
+    with app.app_context():
+        # データベースのテーブルを、もし存在しなければ作成する
+        db.create_all()
+
+        # デフォルトユーザーが存在しない場合のみ追加する
+        test_user_username = 'testuser'
+        test_user_password = 'password'
+        if not User.query.filter_by(username=test_user_username).first():
+            hashed_password = generate_password_hash(test_user_password)
+            new_user = User(username=test_user_username, password=hashed_password)
+            db.session.add(new_user)
+            db.session.commit()
     
     return app
 
@@ -40,7 +54,6 @@ from flask.cli import with_appcontext
 @click.command('init-db')
 @with_appcontext
 def init_db_command():
-    db.drop_all()
     db.create_all()
 
     from werkzeug.security import generate_password_hash
