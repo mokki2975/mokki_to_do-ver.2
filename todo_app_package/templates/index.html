@@ -19,6 +19,9 @@
             @apply bg-blue-600; 
         } */
     </style>
+    <script>
+        const csrfToken = "{{ csrf_token() }}";
+    </script>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
@@ -105,17 +108,20 @@
                 <ul class="space-y-3">
                     {% for task in tasks %}
                         <li class="flex items-center justify-between p-3 bg-gray-50 rounded-md shadow-sm border border-gray-200">
-                            <span class="flex-grow text-lg {% if task.done %}task-done{% endif %}">{{ task.task }}</span>
+                            <div class="flex items-center space-x-2">
+                                <input 
+                                    type="checkbox"
+                                    data-task-id="{{ task.id }}"
+                                    {% if task.is_completed %}checked{% endif %}
+                                    class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                                >
+                                <span class="text-lg {% if task.is_completed %}task-done{% endif %}">{{ task.task }}</span>
+                            </div>
                             <div class="flex items-center space-x-2">
                                 <!-- 編集ボタン -->
                                 <a href="{{ url_for('tasks.edit_task', task_id=task.id) }}" 
                                    class="bg-gray-400 hover:bg-gray-500 text-white text-sm font-bold py-1 px-3 rounded-md transition duration-300">
                                     編集
-                                </a>
-                                <!-- 完了/未完了切り替えボタン -->
-                                <a href="{{ url_for('tasks.toggle_task', task_id=task.id) }}" 
-                                   class="{% if task.done %}bg-yellow-500 hover:bg-yellow-600{% else %}bg-green-500 hover:bg-green-600{% endif %} text-white text-sm font-bold py-1 px-3 rounded-md transition duration-300">
-                                    {% if task.done %}未完了に{% else %}完了に{% endif %}
                                 </a>
                                 <!-- 削除ボタン -->
                                 <a href="{{ url_for('tasks.delete_task', task_id=task.id) }}" 
