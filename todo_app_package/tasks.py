@@ -1,4 +1,13 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask import (
+    Blueprint, 
+    render_template, 
+    request, 
+    redirect, 
+    url_for, 
+    flash, 
+    session, 
+    jsonify,
+)
 from .extensions import db
 from .models import Task
 from .forms import TaskForm, EditTaskForm
@@ -18,9 +27,9 @@ def index():
     query = Task.query.filter_by(user_id=current_user.id)
 
     if status_filter == 'done':
-        query = query.filter_by(done=True)
+        query = query.filter_by(is_completed=True)
     elif status_filter == 'active':
-        query = query.filter_by(done=False)
+        query = query.filter_by(is_completed=False)
 
     if sort_by == 'newest':
         query = query.order_by(Task.id.desc())
@@ -43,7 +52,7 @@ def add_task():
     if task_form.validate_on_submit():
         task_content = task_form.task_content.data
         try:
-            new_task = Task(user_id=current_user.id, task=task_content, done=False)
+            new_task = Task(user_id=current_user.id, task=task_content, is_completed=False)
             db.session.add(new_task)
             db.session.commit()
             flash('タスクを追加しました！', 'success')
@@ -65,7 +74,7 @@ def toggle_task(task_id):
     task = Task.query.filter_by(id=task_id, user_id=current_user.id).first()
 
     if task:
-        task.done = not task.done
+        task.is_completed = not task.is_completed
         db.session.commit()
         flash('タスクの状態を更新しました！', 'success')
     else:
@@ -115,3 +124,28 @@ def edit_task(task_id):
     else:
         form.task_content.data = task.task
         return render_template('edit.html', form=form, task=task)
+
+@tasks_bp.route('/api/toggle_task/<int:task_id>', methods=['POST'])
+@login_required
+def toggle_task_api(task_id):
+    try:
+        task = Task.query.filter_by(id=task_id, user_id=current_user.id).first()
+        if not task:
+            return jsonify({'success': False, 'message': 'タスクが見つかりません。'}), 404
+
+        data = request.get_json()
+        if data is None or 'is_completed' not in data:
+            return jsonify({'success': False, 'message': '無効なリクエストです。'}), 400
+
+        task.is_completed = data['is_completed']
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'message': 'タスクの状態が正常に更新されました。',
+            'task_id': task.id,
+            'is_completed': task.is_completed
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500

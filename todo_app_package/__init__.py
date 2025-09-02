@@ -6,6 +6,9 @@ from .auth import auth_bp
 from .tasks import tasks_bp
 from .settings import Config
 from werkzeug.security import generate_password_hash
+from flask_wtf.csrf import CSRFProtect
+
+csrf = CSRFProtect()
 
 def create_app(config_class=Config):
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -13,6 +16,8 @@ def create_app(config_class=Config):
     app = Flask(__name__, static_folder=static_folder_path)
     
     app.config.from_object(config_class)
+
+    csrf.init_app(app)
      
     db.init_app(app)
 

@@ -15,7 +15,7 @@ class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     task = db.Column(db.String(120), nullable=False)
-    done = db.Column(db.Boolean, default=False, nullable=False)
+    is_completed = db.Column(db.Boolean, default=False, nullable=False)
 
     def __repr__(self):
-        return f'<Task {self.task} (Done: {self.done})>'
+        return f'<Task {self.task} (Done: {self.is_completed})>'
