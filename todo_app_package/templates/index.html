@@ -19,9 +19,6 @@
             @apply bg-blue-600; 
         } */
     </style>
-    <script>
-        const csrfToken = "{{ csrf_token() }}";
-    </script>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
@@ -107,7 +104,7 @@
             {% if tasks %}
                 <ul class="space-y-3">
                     {% for task in tasks %}
-                        <li class="flex items-center justify-between p-3 bg-gray-50 rounded-md shadow-sm border border-gray-200">
+                        <li class="flex items-center justify-between p-3 bg-gray-50 rounded-md shadow-sm border border-gray-200 " data-task-id="{{ task.id }}">
                             <div class="flex items-center space-x-2">
                                 <input 
                                     type="checkbox"
@@ -125,7 +122,7 @@
                                 </a>
                                 <!-- 削除ボタン -->
                                 <a href="{{ url_for('tasks.delete_task', task_id=task.id) }}" 
-                                   class="bg-red-500 hover:bg-red-600 text-white text-sm font-bold py-1 px-3 rounded-md transition duration-300">
+                                   class="bg-red-500 hover:bg-red-600 text-white text-sm font-bold py-1 px-3 rounded-md transition duration-300 delete-task-btn">
                                     削除
                                 </a>
                             </div>

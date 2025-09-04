@@ -149,3 +149,18 @@ def toggle_task_api(task_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'success': False, 'message': str(e)}), 500
+
+@tasks_bp.route('/api/delete_task/<int:task_id>', methods=['DELETE'])
+@login_required
+def delete_task_api(task_id):
+    try:
+        task = Task.query.filter_by(id=task_id, user_id=current_user.id).first()
+        if not task:
+            return jsonify({'success':  False, 'message': 'タスクが見つかりません。'}), 404
+        
+        db.session.delete(task)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'タスクが正常に削除されました。'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
