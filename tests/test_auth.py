@@ -1,3 +1,5 @@
+#デバッグ用のコード（普段は使わない）
+
 import pytest
 from todo_app_package import create_app, db
 from todo_app_package.models import User

@@ -45,7 +45,7 @@
                 </a>
             </div>
             <!-- タスク追加フォーム -->
-            <form action="{{ url_for('tasks.add_task') }}" method="post" class="mb-6 flex space-x-2">
+            <form id="add-task-form" class="mb-6 flex space-x-2">
                 {{ task_form.csrf_token }} {# CSRFトークンを自動で挿入 #}
                 {{ task_form.task_content(class="flex-grow p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500", placeholder="新しいタスクを入力") }}
                 {{ task_form.submit(class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md shadow-md transition duration-300") }}
