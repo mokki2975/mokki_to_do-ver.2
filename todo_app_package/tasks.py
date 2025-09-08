@@ -164,3 +164,31 @@ def delete_task_api(task_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'success': False, 'message': str(e)}), 500
+
+@tasks_bp.route('/api/add_task', methods=['POST'])
+@login_required
+def add_task_api():
+    try:
+        data = request.get_json()
+        task_content = data.get('task_content')
+
+        if not task_content or not task_content.strip():
+            return jsonify({'success': False, 'message': 'タスクの内容が入力されていません。'}), 400
+
+        new_task = Task(user_id=current_user.id, task=task_content.strip(), is_completed=False)
+        db.session.add(new_task)
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'message': 'タスクが正常に追加されました。',
+            'task': {
+                'id': new_task.id,
+                'content': new_task.task,
+                'is_completed': new_task.is_completed
+            }
+        }), 201
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
