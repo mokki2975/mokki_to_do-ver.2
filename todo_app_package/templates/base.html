@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}To-Doリスト{% endblock %}</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+        }
+        .task-done {
+            text-decoration: line-through;
+            color: #6b7280; /* Gray-500 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <!-- ナビバー -->
+    <header class="mb-6 flex justify-between items-center max-w-4xl mx-auto w-full p-2">
+        <h1 class="text-2xl font-bold text-gray-800">To-Doリスト</h1>
+        <nav>
+            {% if current_user.is_authenticated %}
+                <span class="mr-4 text-gray-700">こんにちは、{{ current_user.username }}さん！</span>
+                <a href="{{ url_for('auth.logout') }}" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded-md shadow-md transition duration-300">
+                    ログアウト
+                </a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="text-blue-500 hover:underline mr-2">ログイン</a>
+                <a href="{{ url_for('auth.register') }}" class="text-blue-500 hover:underline">新規登録</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <!-- フラッシュメッセージ -->
+    <div class="max-w-4xl mx-auto mb-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul>
+                    {% for category, message in messages %}
+                        <li class="p-2 rounded-md mb-2 
+                            {% if category == 'success' %}bg-green-100 text-green-800
+                            {% elif category == 'error' %}bg-red-100 text-red-800
+                            {% elif category == 'info' %}bg-blue-100 text-blue-800
+                            {% elif category == 'warning' %}bg-yellow-100 text-yellow-800
+                            {% else %}bg-gray-200 text-gray-800
+                            {% endif %}"
+                        >
+                            {{ message }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- メインコンテンツ -->
+    <main class="max-w-4xl mx-auto w-full p-4 flex-grow">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="mt-12 text-center text-gray-500 text-sm">
+        シンプルなTo-Doリスト with Gemini
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

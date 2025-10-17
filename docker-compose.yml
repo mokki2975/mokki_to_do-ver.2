@@ -35,7 +35,7 @@ services:
       db: # ここはサービス名をキーとした辞書形式になります
         condition: service_healthy
     command: >
-      sh -c "flask run --host=0.0.0.0" # アプリ起動コマンド
+      sh -c "flask run --host=0.0.0.0 --reload" # アプリ起動コマンド
 
 volumes:
   postgres_data: # データベースの永続化用ボリューム
