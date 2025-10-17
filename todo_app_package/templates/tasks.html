@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}タスク一覧{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-6 text-center">タスク一覧</h1>
+
+<!-- タスク追加フォーム -->
+<form id="add-task-form" class="mb-6 flex space-x-2" method="post">
+    {{ task_form.csrf_token }}
+    {{ task_form.task_content(class="flex-grow p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500", placeholder="新しいタスクを入力") }}
+    {{ task_form.priority(class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500") }}
+    {{ task_form.submit(class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md shadow-md transition duration-300") }}
+</form>
+
+<!-- フィルタリング・ソート -->
+<div class="mb-6 flex justify-center space-x-2">
+    {% for status, label in [('all','すべて'),('active','未完了'),('done','完了済み')] %}
+        <a href="{{ url_for('tasks.index', status=status, sort=current_sort) }}"
+           class="px-3 py-1 rounded-md {% if current_status == status %}bg-blue-500 text-white{% else %}bg-gray-200 text-gray-800{% endif %}">
+            {{ label }}
+        </a>
+    {% endfor %}
+
+    {% for sort, label in [('newest','新しい順'),('priority','優先度')] %}
+        <a href="{{ url_for('tasks.index', status=current_status, sort=sort) }}"
+           class="px-3 py-1 rounded-md {% if current_sort == sort %}bg-blue-500 text-white{% else %}bg-gray-200 text-gray-800{% endif %}">
+            {{ label }}
+        </a>
+    {% endfor %}
+</div>
+
+<!-- タスクリスト -->
+{% if tasks %}
+    <ul class="space-y-3">
+        {% for task in tasks %}
+        <li class="flex items-center justify-between p-3 bg-white rounded-md shadow border" data-task-id="{{ task.id }}">
+            <div class="flex items-center space-x-2">
+                <input type="checkbox" data-task-id="{{ task.id }}" {% if task.is_completed %}checked{% endif %} class="h-4 w-4 rounded border-gray-300 text-blue-600 cursor-pointer">
+                <span class="task-text text-lg {% if task.is_completed %}line-through text-gray-400{% endif %}">{{ task.task }}</span>
+                <span class="text-white text-xs font-bold px-2 py-1 rounded
+                      {% if task.priority == 3 %}bg-red-500
+                      {% elif task.priority == 2 %}bg-yellow-500
+                      {% else %}bg-green-500{% endif %}">{{ task.priority }}</span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <a href="{{ url_for('tasks.edit_task', task_id=task.id) }}" class="bg-gray-400 hover:bg-gray-500 text-white px-2 py-1 rounded-md text-sm">編集</a>
+                <a href="javascript:void(0)" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-sm delete-task-btn">削除</a>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p class="text-center text-gray-500 mt-4">まだタスクがありません。新しいタスクを追加しましょう！</p>
+{% endif %}
+{% endblock %}

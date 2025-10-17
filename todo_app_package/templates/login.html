@@ -1,68 +1,59 @@
-{% if current_user.is_authenticated %}
-    <script>window.location.href = "{{ url_for('tasks.index') }}";</script>
-    <meta http-equiv="refresh" content="0;url={{ url_for('tasks.index') }}">
-{% endif %}
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ログイン - To-Doリスト</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { font-family: "Inter", sans-serif; }
-    </style>
-</head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+{% extends "base.html" %}
+
+{% block title %}ログイン - To-Doリスト{% endblock %}
+
+{% block content %}
+<div class="flex justify-center items-center min-h-[60vh]">
     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm text-center">
         <h1 class="text-3xl font-bold text-gray-800 mb-6">ログイン</h1>
 
+        <!-- フラッシュメッセージ -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <ul class="mb-4">
-                {% for category, message in messages %}
-                    <li class="p-2 rounded-md {% if category == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
-                        {{ message }}
-                    </li>
-                {% endfor %}
+                    {% for category, message in messages %}
+                        <li class="p-2 rounded-md {% if category == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                            {{ message }}
+                        </li>
+                    {% endfor %}
                 </ul>
             {% endif %}
         {% endwith %}
 
+        <!-- ログインフォーム -->
         <form action="{{ url_for('auth.login') }}" method="post" class="space-y-4">
-            {{ form.csrf_token }} {# CSRFトークンを自動で挿入 #}
+            {{ form.csrf_token }}
 
             <div>
                 {{ form.username.label(class="block text-left text-sm font-medium text-gray-700") }}
-                {{ form.username(class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500", placeholder="ユーザー名を入力") }}
-                {% if form.username.errors %}
-                    {% for error in form.username.errors %}
-                        <p class="text-red-600 text-sm mt-1 text-left">{{ error }}</p> 
-                    {% endfor %}
-                {% endif %}
+                {{ form.username(class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500", placeholder="ユーザー名を入力") }}   
+                {% for error in form.username.errors %}
+                    <p class="text-red-600 text-sm mt-1 text-left">{{ error }}</p>
+                {% endfor %}
             </div>
+
             <div>
                 {{ form.password.label(class="block text-left text-sm font-medium text-gray-700") }}
                 {{ form.password(class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500", placeholder="パスワードを入力") }}
-                {% if form.password.errors %}
-                    {% for error in form.password.errors %}
-                        <p class="text-red-600 text-sm mt-1 text-left">{{ error }}</p> 
-                    {% endfor %}
-                {% endif %}
+                {% for error in form.password.errors %}
+                    <p class="text-red-600 text-sm mt-1 text-left">{{ error }}</p>
+                {% endfor %}
             </div>
 
             <div class="mb-6 flex items-center">
-                {{ form.remember_me(class="mr-2 leading-tight")}}
-                {{ form.remember_me.label(class="text-sm text-gray-700")}}
+                {{ form.remember_me(class="mr-2 leading-tight") }}
+                {{ form.remember_me.label(class="text-sm text-gray-700") }}
             </div>
 
-            <div class="flex items-center justify-between">
+            <div>
                 {{ form.submit(class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md shadow-md transition duration-300") }}
             </div>
         </form>
+
         <p class="mt-4 text-sm text-gray-600">
-            アカウントをお持ちでないですか？ <a href="{{ url_for('auth.register') }}" class="text-blue-500 hover:underline">新規登録はこちら</a>
+            アカウントをお持ちでないですか？ 
+            <a href="{{ url_for('auth.register') }}" class="text-blue-500 hover:underline">新規登録はこちら</a>
         </p>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

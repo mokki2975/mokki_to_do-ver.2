@@ -12,7 +12,7 @@ RUN pip install -r requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt pytest 
 
 # ホストのアプリケーションコードをコンテナの/appにコピー
-COPY . .
+COPY . /app
 
 # Flaskアプリケーションがリッスンするポートを公開
 EXPOSE 5000
