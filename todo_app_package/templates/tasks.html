@@ -39,9 +39,13 @@
                 <input type="checkbox" data-task-id="{{ task.id }}" {% if task.is_completed %}checked{% endif %} class="h-4 w-4 rounded border-gray-300 text-blue-600 cursor-pointer">
                 <span class="task-text text-lg {% if task.is_completed %}line-through text-gray-400{% endif %}">{{ task.task }}</span>
                 <span class="text-white text-xs font-bold px-2 py-1 rounded
-                      {% if task.priority == 3 %}bg-red-500
-                      {% elif task.priority == 2 %}bg-yellow-500
-                      {% else %}bg-green-500{% endif %}">{{ task.priority }}</span>
+                    {% if task.priority == 3 %}bg-red-500
+                    {% elif task.priority == 2 %}bg-yellow-500
+                    {% else %}bg-green-500{% endif %}">
+     
+                    {% if task.priority == 3 %}高
+                    {% elif task.priority == 2 %}中
+                    {% else %}低{% endif %}</span>
             </div>
             <div class="flex items-center space-x-2">
                 <a href="{{ url_for('tasks.edit_task', task_id=task.id) }}" class="bg-gray-400 hover:bg-gray-500 text-white px-2 py-1 rounded-md text-sm">編集</a>
